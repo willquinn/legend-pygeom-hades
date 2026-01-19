@@ -93,7 +93,7 @@ def construct(
 
     if "vacuum_cavity" in assemblies:
         cavity_lv = create_vacuum_cavity(reg)
-        cavity_pv = geant4.PhysicalVolume(
+        geant4.PhysicalVolume(
             [0, 0, 0],
             [0, 0, dim.POSITION_CRYOSTAT_CAVITY_FROM_TOP, "mm"],
             cavity_lv,
@@ -101,11 +101,10 @@ def construct(
             world_lv,
             registry=reg,
         )
-        reg.addVolumeRecursive(cavity_pv)
 
     if "detector" in assemblies:
         detector_lv = create_detector(from_gdml=True)
-        detector_pv = geant4.PhysicalVolume(
+        geant4.PhysicalVolume(
             [0, 0, 0],
             [0, 0, (dim.POSITION_DETECTOR_FROM_CRYOSTAT_Z - dim.POSITION_CRYOSTAT_CAVITY_FROM_TOP), "mm"],
             detector_lv,
@@ -113,11 +112,10 @@ def construct(
             cavity_lv,
             registry=reg,
         )
-        reg.addVolumeRecursive(detector_pv)
 
     if "wrap" in assemblies:
         wrap_lv = create_wrap(from_gdml=True)
-        wrap_pv = geant4.PhysicalVolume(
+        geant4.PhysicalVolume(
             [0, 0, 0],
             [0, 0, dim.POSITION_WRAP_FROM_CRYOSTAT_Z - dim.POSITION_CRYOSTAT_CAVITY_FROM_TOP, "mm"],
             wrap_lv,
@@ -125,11 +123,10 @@ def construct(
             cavity_lv,
             registry=reg,
         )
-        reg.addVolumeRecursive(wrap_pv)
 
     if "holder" in assemblies:
         holder_lv = create_holder(from_gdml=True)
-        holder_pv = geant4.PhysicalVolume(
+        geant4.PhysicalVolume(
             [0, 0, 0],
             [0, 0, dim.POSITION_HOLDER_FROM_CRYOSTAT_Z - dim.POSITION_CRYOSTAT_CAVITY_FROM_TOP, "mm"],
             holder_lv,
@@ -137,11 +134,10 @@ def construct(
             cavity_lv,
             registry=reg,
         )
-        reg.addVolumeRecursive(holder_pv)
 
     if "bottom_plate" in assemblies:
         plate_lv = create_bottom_plate(from_gdml=True)
-        plate_pv = geant4.PhysicalVolume(
+        geant4.PhysicalVolume(
             [0, 0, 0],
             [0, 0, dim.POSITION_CRYOSTAT_CAVITY_FROM_BOTTOM + (dim.BOTTOM_PLATE_HEIGHT) / 2, "mm"],
             plate_lv,
@@ -149,11 +145,10 @@ def construct(
             world_lv,
             registry=reg,
         )
-        reg.addVolumeRecursive(plate_pv)
 
     if "lead_castle" in assemblies:
         castle_lv = create_lead_castle(from_gdml=True)
-        castle_pv = geant4.PhysicalVolume(
+        geant4.PhysicalVolume(
             [0, 0, 0],
             [0, 0, dim.POSITION_CRYOSTAT_CAVITY_FROM_BOTTOM - (dim.BASE_HEIGHT) / 2, "mm"],
             castle_lv,
@@ -161,11 +156,10 @@ def construct(
             world_lv,
             registry=reg,
         )
-        reg.addVolumeRecursive(castle_pv)
 
     if "source" in assemblies:
         source_lv = create_source(from_gdml=True)
-        source_pv = geant4.PhysicalVolume(
+        geant4.PhysicalVolume(
             [0, 0, 0],
             [0, 0, -dim.POSITION_SOURCE_FROM_CRYOSTAT_Z, "mm"],
             source_lv,
@@ -173,11 +167,10 @@ def construct(
             world_lv,
             registry=reg,
         )
-        reg.addVolumeRecursive(source_pv)
 
     if "source_holder" in assemblies:
         s_holder_lv = create_source_holder(from_gdml=True)
-        s_holder_pv = geant4.PhysicalVolume(
+        geant4.PhysicalVolume(
             [0, 0, 0],
             [0, 0, -(dim.POSITION_SOURCE_FROM_CRYOSTAT_Z + dim.SOURCE_HOLDER_TOP_PLATE_HEIGHT / 2), "mm"],
             s_holder_lv,
@@ -185,14 +178,10 @@ def construct(
             world_lv,
             registry=reg,
         )
-        reg.addVolumeRecursive(s_holder_pv)
 
     if "cryostat" in assemblies:
         cryo_lv = create_cryostat(from_gdml=True)
-        cryo_pv = geant4.PhysicalVolume(
-            [0, 0, 0], [0, 0, 0, "mm"], cryo_lv, "cryo_pv", world_lv, registry=reg
-        )
-        reg.addVolumeRecursive(cryo_pv)
+        geant4.PhysicalVolume([0, 0, 0], [0, 0, 0, "mm"], cryo_lv, "cryo_pv", world_lv, registry=reg)
 
     v = visualisation.VtkViewer()
     v.addLogicalVolume(reg.getWorldVolume())
