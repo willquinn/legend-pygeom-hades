@@ -8,8 +8,8 @@ from git import GitCommandError
 from legendmeta import LegendMetadata
 from pyg4ometry import geant4, visualisation
 
-from . import fixed_dimensions as dim
-from .create_volumes import (
+from pygeomhades import fixed_dimensions as dim
+from pygeomhades.create_volumes import (
     create_bottom_plate,
     create_cryostat,
     create_detector,
