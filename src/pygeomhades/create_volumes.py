@@ -5,6 +5,7 @@ from pathlib import Path
 
 import numpy as np
 from pyg4ometry import gdml, geant4
+from pygeomhpges import make_hpge
 
 from pygeomhades import fixed_dimensions as dim
 from pygeomhades.utils import _read_gdml_model
@@ -32,15 +33,8 @@ def create_vacuum_cavity(reg: geant4.Registry) -> geant4.LogicalVolume:
     return geant4.LogicalVolume(vacuum_cavity, cavity_material, "cavity_lv", reg)
 
 
-def create_detector(from_gdml: bool = False) -> geant4.LogicalVolume:
-    if from_gdml:
-        reg_detector = _read_gdml_model("detector.gdml")
-        detector_lv = reg_detector.getWorldVolume()
-    else:
-        # TODO: add the construction of geometry
-        msg = "cannot construct geometry without the gdml for now"
-        raise RuntimeError(msg)
-    return detector_lv
+def create_detector(reg: geant4.Registry, ged_meta_dict) -> geant4.LogicalVolume:
+    return make_hpge(ged_meta_dict, name="hpge_lv", registry=reg)
 
 
 def create_wrap(detector_meta: dict, from_gdml: bool = False) -> geant4.LogicalVolume:

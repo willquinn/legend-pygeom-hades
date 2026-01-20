@@ -116,7 +116,7 @@ def construct(
         )
 
     if "detector" in assemblies:
-        detector_lv = create_detector(from_gdml=True)
+        detector_lv = create_detector(reg, ged_diode_meta)
         geant4.PhysicalVolume(
             [0, 0, 0],
             [0, 0, (dim.POSITIONS_FROM_CRYOSTAT["detector"] - dim.POSITION_CRYOSTAT_CAVITY_FROM_TOP), "mm"],
