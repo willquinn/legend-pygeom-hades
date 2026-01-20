@@ -28,6 +28,8 @@ repos:
         args: ["--pytest-test-first"]
       - id: requirements-txt-fixer
       - id: trailing-whitespace
+      - id: check-xml
+        files: \.gdml$
 
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: "v1.10.0"
@@ -39,9 +41,12 @@ repos:
   - repo: https://github.com/rbubley/mirrors-prettier
     rev: "v3.6.2"
     hooks:
-      - id: prettier
-        types_or: [yaml, markdown, json]
-        args: [--prose-wrap=always]
+    - id: prettier
+      types_or: [yaml, markdown, json, xml]
+      files: \.(xml|gdml)$
+      args: [--prose-wrap=always]
+      additional_dependencies:
+        - "@prettier/plugin-xml"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.14.3"

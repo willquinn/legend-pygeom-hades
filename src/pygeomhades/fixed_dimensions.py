@@ -8,34 +8,32 @@ CRYOSTAT_THICKNESS = 1.5
 POSITION_CRYOSTAT_CAVITY_FROM_TOP = 1.5
 POSITION_CRYOSTAT_CAVITY_FROM_BOTTOM = 0.8
 POSITION_CRYOSTAT_FROM_BOTTOM = 250.0
+
 # Base dimensions
 BASE_WIDTH = 480.0
 BASE_DEPTH = 450.0
 BASE_HEIGHT = 500.0
+
 # Inner cavity dimensions
 INNER_CAVITY_WIDTH = 300.0
 INNER_CAVITY_DEPTH = 250.0
 INNER_CAVITY__HEIGHT = 500.0
+
 # Cavity dimensions
 CAVITY_WIDTH = 120.0
 CAVITY_DEPTH = 100.0
 CAVITY_HEIGHT = 400.0
+
 # Top dimensions
 TOP_WIDTH = 300.0
 TOP_DEPTH = 300.0
 TOP_HEIGHT = 90.0
+
 # Front dimensions
 FRONT_WIDTH = 160.0
 FRONT_DEPTH = 100.0
-FRONT_HEIGTH = 400.0
-# Bottom plate
-BOTTOM_PLATE_WIDTH = 750.0
-BOTTOM_PLATE_DEPTH = 750.0
-BOTTOM_PLATE_HEIGHT = 15.0
-# Cavity bottom plate
-CAVITY_BOTTOM_PLATE_WIDHT = 120.0
-CAVITY_BOTTOM_PLATE_DEPTH = 940.0
-CAVITY_BOTTOM_PLATE_HEIGHT = 20.0
+FRONT_HEIGHT = 400.0
+
 # Source holder dimensions
 SOURCE_HOLDER_TOP_PLATE_HEIGHT = 3.0
 SOURCE_HOLDER_TOP_PLATE_WIDTH = 30.0
@@ -45,16 +43,61 @@ SOURCE_HOLDER_INNER_WIDTH = 87.0
 SOURCE_HOLDER_BOTTOM_INNER_WIDTH = 102.0
 SOURCE_HOLDER_OUTER_WIDTH = 108.0
 SOURCE_HOLDER_TOPBOTTOM_HEIGHT = 6.1
+
 # Source dimensions
 SOURCE_HEIGHT = 0.1
 SOURCE_WIDTH = 5.0
+
 # Source foil
 SOURCE_FOIL_HEIGHT = 0.5
 SOURCE_FOIL_WIDTH = 26.0
+
 # Aluminum ring around source
 SOURCE_AL_RING_HEIGHT = 3.0
 SOURCE_AL_RING_WIDTH_MAX = 30.0
 SOURCE_AL_RING_WIDTH_MIN = 26.0
+
+LEAD_CASTLE_1 = {
+    "base_width": 480,
+    "base_depth": 450,
+    "base_height": 500,
+    "inner_cavity_width": 300,
+    "inner_cavity_depth": 250,
+    "inner_cavity_height": 500,
+    "cavity_width": 120,
+    "cavity_depth": 100,
+    "cavity_height": 400,
+    "top_width": 300,
+    "top_depth": 300,
+    "top_height": 90,
+    "front_width": 160,
+    "front_depth": 100,
+    "front_height": 400,
+}
+
+LEAD_CASTLE_2 = {
+    "base_width": 350,
+    "base_depth": 350,
+    "base_height": 400,
+    "inner_cavity_width": 250,
+    "inner_cavity_depth": 250,
+    "inner_cavity_height": 400,
+    "top_width": 200,
+    "top_depth": 200,
+    "top_height": 50,
+    "copper_plate_width": 350,
+    "copper_plate_depth": 350,
+    "copper_plate_height": 10,
+}
+
+BOTTOM_PLATE = {
+    "width": 750,
+    "depth": 750,
+    "height": 15,
+    "cavity_width": 120,
+    "cavity_depth": 940,  # <!--475*2-->
+    "cavity_height": 20,
+}
 
 # Changing relative dimensions
 # Positions relative to cryostat initialise

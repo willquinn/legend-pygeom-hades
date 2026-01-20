@@ -25,7 +25,7 @@ from pygeomhades.create_volumes import (
 
 log = logging.getLogger(__name__)
 
-DEFAULT_CONFIGS = TextDB(resources.files("pygeomhades") / "configs" / "holder_wrap")
+DEFAULT_DIMENSIONS = TextDB(resources.files("pygeomhades") / "configs" / "holder_wrap")
 
 # TODO: Could the user want to remove sections of the geometry?
 DEFAULT_ASSEMBLIES = {
@@ -51,9 +51,9 @@ def merge_configs(ged_name: str, lmeta, config) -> dict:
 
 def construct(
     assemblies: list[str] | set[str] = DEFAULT_ASSEMBLIES,
-    config: str | dict | None = DEFAULT_CONFIGS,
+    dimensions: dict = DEFAULT_DIMENSIONS,
+    config: str | dict | None = None,
     public_geometry: bool = False,
-    ged_name: str = "B00000B",
 ) -> geant4.Registry:
     """Construct the HADES geometry and return the registry containing the world volume.
 
@@ -93,8 +93,9 @@ def construct(
         # TODO: use this public metadata proxy
         # dummy_geom = PublicMetadataProxy()
 
-    ged_diode_meta = merge_configs(ged_name, lmeta, config)
-    dim.update_cryostat_dims(ged_diode_meta)
+    hpge_name = config.hpge_name
+    hpge_meta = merge_configs(hpge_name, lmeta, dimensions)
+    dim.update_cryostat_dims(hpge_meta)
 
     reg = geant4.Registry()
 
@@ -116,7 +117,7 @@ def construct(
         )
 
     if "detector" in assemblies:
-        detector_lv = create_detector(reg, ged_diode_meta)
+        detector_lv = create_detector(reg, hpge_meta)
         geant4.PhysicalVolume(
             [0, 0, 0],
             [0, 0, (dim.POSITIONS_FROM_CRYOSTAT["detector"] - dim.POSITION_CRYOSTAT_CAVITY_FROM_TOP), "mm"],
@@ -127,7 +128,7 @@ def construct(
         )
 
     if "wrap" in assemblies:
-        wrap_lv = create_wrap(ged_diode_meta, from_gdml=True)
+        wrap_lv = create_wrap(hpge_meta, from_gdml=True)
         geant4.PhysicalVolume(
             [0, 0, 0],
             [0, 0, dim.POSITIONS_FROM_CRYOSTAT["wrap"] - dim.POSITION_CRYOSTAT_CAVITY_FROM_TOP, "mm"],
@@ -138,7 +139,7 @@ def construct(
         )
 
     if "holder" in assemblies:
-        holder_lv = create_holder(ged_diode_meta, from_gdml=True)
+        holder_lv = create_holder(hpge_meta, from_gdml=True)
         geant4.PhysicalVolume(
             [0, 0, 0],
             [0, 0, dim.POSITIONS_FROM_CRYOSTAT["holder"] - dim.POSITION_CRYOSTAT_CAVITY_FROM_TOP, "mm"],
@@ -160,7 +161,7 @@ def construct(
         )
 
     if "lead_castle" in assemblies:
-        castle_lv = create_lead_castle(from_gdml=True)
+        castle_lv = create_lead_castle(config.lead_castle, from_gdml=True)
         geant4.PhysicalVolume(
             [0, 0, 0],
             [0, 0, dim.POSITION_CRYOSTAT_CAVITY_FROM_BOTTOM - (dim.BASE_HEIGHT) / 2, "mm"],

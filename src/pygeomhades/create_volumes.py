@@ -14,6 +14,19 @@ from pygeomhades.utils import _read_gdml_model
 #      but maybe when/if we move away from loading gdml files this will not be true
 
 
+def amend_gdml(dummy_gdml_path: Path, replacements: dict) -> geant4.Registry:
+    gdml_text = dummy_gdml_path.read_text()
+
+    for key, val in replacements.items():
+        gdml_text = gdml_text.replace(key, f"{val:.{1}f}")
+
+    with tempfile.NamedTemporaryFile("w+", suffix=".gdml") as f:
+        f.write(gdml_text)
+        f.flush()
+        reader = gdml.Reader(f.name)
+        return reader.getRegistry()
+
+
 def create_vacuum_cavity(reg: geant4.Registry) -> geant4.LogicalVolume:
     vacuum_cavity_radius = (dim.CRYOSTAT_WIDTH - 2 * dim.CRYOSTAT_THICKNESS) / 2
     vacuum_cavity_z = (
@@ -47,19 +60,7 @@ def create_wrap(detector_meta: dict, from_gdml: bool = False) -> geant4.LogicalV
             "wrap_inner_radius_in_mm": wrap["inner"]["radius_in_mm"],
             "wrap_top_thickness_in_mm": wrap["outer"]["height_in_mm"] - wrap["inner"]["height_in_mm"],
         }
-
-        gdml_text = dummy_gdml_path.read_text()
-
-        for key, val in replacements.items():
-            gdml_text = gdml_text.replace(key, f"{val:.{1}f}")
-
-        with tempfile.NamedTemporaryFile("w+", suffix=".gdml") as f:
-            f.write(gdml_text)
-            f.flush()
-            reader = gdml.Reader(f.name)
-            registry = reader.getRegistry()
-
-        wrap_lv = registry.getWorldVolume()
+        wrap_lv = amend_gdml(dummy_gdml_path, replacements).getWorldVolume()
     else:
         # TODO: add the construction of geometry
         msg = "cannot construct geometry without the gdml for now"
@@ -108,18 +109,7 @@ def create_holder(detector_meta: dict, from_gdml: bool = False) -> geant4.Logica
             msg = "cannot construct geometry for coax or ppc"
             raise RuntimeError(msg)
 
-        gdml_text = dummy_gdml_path.read_text()
-
-        for key, val in replacements.items():
-            gdml_text = gdml_text.replace(key, f"{val:.{1}f}")
-
-        with tempfile.NamedTemporaryFile("w+", suffix=".gdml") as f:
-            f.write(gdml_text)
-            f.flush()
-            reader = gdml.Reader(f.name)
-            registry = reader.getRegistry()
-
-        holder_lv = registry.getWorldVolume()
+        holder_lv = amend_gdml(dummy_gdml_path, replacements).getWorldVolume()
 
     else:
         # TODO: add the construction of geometry
@@ -130,8 +120,17 @@ def create_holder(detector_meta: dict, from_gdml: bool = False) -> geant4.Logica
 
 def create_bottom_plate(from_gdml: bool = False) -> geant4.LogicalVolume:
     if from_gdml:
-        reg_plate = _read_gdml_model("bottom_plate.gdml")
-        plate_lv = reg_plate.getWorldVolume()
+        dummy_gdml_path = Path(__file__).parent / "models/dummy/lead_castle_table1_dummy.gdml"
+        plate = dim.BOTTOM_PLATE
+        replacements = {
+            "bottom_plate_width": plate["width"],
+            "bottom_plate_depth": plate["depth"],
+            "bottom_plate_height": plate["height"],
+            "cavity_bottom_plate_width": plate["cavity_width"],
+            "cavity_bottom_plate_depth": plate["cavity_depth"],
+            "cavity_bottom_plate_height": plate["cavity_height"],
+        }
+        plate_lv = amend_gdml(dummy_gdml_path, replacements)
     else:
         # TODO: add the construction of geometry
         msg = "cannot construct geometry without the gdml for now"
@@ -139,10 +138,36 @@ def create_bottom_plate(from_gdml: bool = False) -> geant4.LogicalVolume:
     return plate_lv
 
 
-def create_lead_castle(from_gdml: bool = False) -> geant4.LogicalVolume:
+def create_lead_castle(table_num: int, from_gdml: bool = False) -> geant4.LogicalVolume:
     if from_gdml:
-        reg_castle = _read_gdml_model("lead_castle_table1.gdml")
-        castle_lv = reg_castle.getWorldVolume()
+        if table_num == 1:
+            dummy_gdml_path = Path(__file__).parent / "models/dummy/lead_castle_table1_dummy.gdml"
+            lead_castle = dim.LEAD_CASTLE_1
+            replacements = {
+                "base_width_1": lead_castle["base_width"],
+                "base_depth_1": lead_castle["base_depth"],
+                "base_height_1": lead_castle["base_height"],
+                "inner_cavity_width_1": lead_castle["inner_cavity_width"],
+                "inner_cavity_depth_1": lead_castle["inner_cavity_depth"],
+                "inner_cavity_height_1": lead_castle["inner_cavity_height"],
+                "cavity_width_1": lead_castle["cavity_width"],
+                "cavity_depth_1": lead_castle["cavity_depth"],
+                "cavity_height_1": lead_castle["cavity_height"],
+                "top_width_1": lead_castle["top_width"],
+                "top_depth_1": lead_castle["top_depth"],
+                "top_height_1": lead_castle["top_height"],
+                "front_width_1": lead_castle["front_width"],
+                "front_depth_1": lead_castle["front_depth"],
+                "front_height_1": lead_castle["front_height"],
+            }
+        elif table_num == 2:
+            dummy_gdml_path = Path(__file__).parent / "models/dummy/lead_castle_table2_dummy.gdml"
+            lead_castle = dim.LEAD_CASTLE_2
+            replacements = {}
+        else:
+            msg = "there are only 2 lead castles currently in the gdml"
+            raise RuntimeError(msg)
+        castle_lv = amend_gdml(dummy_gdml_path, replacements)
     else:
         # TODO: add the construction of geometry
         msg = "cannot construct geometry without the gdml for now"
