@@ -36,8 +36,8 @@ DEFAULT_ASSEMBLIES = {
     "holder",
     "wrap",
     "detector",
-    # "source",
-    # "source_holder"
+    "source",
+    "source_holder",
 }
 
 
@@ -97,7 +97,7 @@ def construct(
         # dummy_geom = PublicMetadataProxy()
 
     if config is None:
-        config = {"hpge_name": "V03421A", "lead_castle": 1}
+        config = {"hpge_name": "V03421A", "lead_castle": 1, "source": "ba"}
 
     hpge_name = config["hpge_name"]
     hpge_meta = merge_configs(hpge_name, lmeta, dimensions)
@@ -215,7 +215,7 @@ def construct(
         )
 
     if "cryostat" in assemblies:
-        cryo_lv = create_cryostat(hpge_meta, from_gdml=True)
+        cryo_lv = create_cryostat(from_gdml=True)
         geant4.PhysicalVolume([0, 0, 0], [0, 0, 0, "mm"], cryo_lv, "cryo_pv", world_lv, registry=reg)
 
     v = visualisation.VtkViewer()

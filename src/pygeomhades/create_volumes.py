@@ -8,7 +8,6 @@ from pyg4ometry import gdml, geant4
 from pygeomhpges import make_hpge
 
 from pygeomhades import dimensions as dim
-from pygeomhades.utils import _read_gdml_model
 
 # TODO: These functions seem very repetitive, maybe there is a way to reduce
 #      but maybe when/if we move away from loading gdml files this will not be true
@@ -194,9 +193,48 @@ def create_lead_castle(table_num: int, from_gdml: bool = False) -> geant4.Logica
 
 def create_source(from_gdml: bool = False) -> geant4.LogicalVolume:
     if from_gdml:
-        # TODO: replace this with a generic reader?
-        reg_source = _read_gdml_model("source_encapsulated_ba_HS4.gdml")
-        source_lv = reg_source.getWorldVolume()
+        source = dim.SOURCE
+        if source["id"] == "am1":
+            replacements = {
+                "source_height": source["height"],
+                "source_width": source["width"],
+                "source_capsule_height": source["capsule"]["height"],
+                "source_capsule_width": source["capsule"]["width"],
+                "window_source": source["collimator"]["window"],
+                "collimator_height": source["collimator"]["height"],
+                "collimator_depth": source["collimator"]["depth"],
+                "collimator_width": source["collimator"]["width"],
+                "collimator_beam_height": source["collimator"]["beam_height"],
+                "collimator_beam_width": source["collimator"]["beam_width"],
+            }
+        elif source["id"] == "am2":
+            replacements = {
+                "source_height": source["height"],
+                "source_width": source["width"],
+                "source_capsule_height": source["capsule"]["height"],
+                "source_capsule_width": source["capsule"]["width"],
+                "source_capsule_depth": source["capsule"]["depth"],
+            }
+        elif source["id"] in ["ba", "co"]:
+            replacements = {
+                "source_height": source["height"],
+                "source_width": source["width"],
+                "source_foil_height": source["foil"]["height"],
+                "source_Alring_height": source["al_ring"]["height"],
+                "source_Alring_width_min": source["al_ring"]["width_min"],
+                "source_Alring_width_max": source["al_ring"]["width_max"],
+            }
+        elif source["id"] == "th":
+            replacements = {
+                "source_plates_height": source["plates"]["height"],
+                "source_plates_width": source["plates"]["width"],
+                "source_plates_cavity_width": source["plates"]["cavity_width"],
+            }
+        else:
+            msg = "only 5 sources have been defined"
+            raise RuntimeError(msg)
+        dummy_gdml_path = Path(__file__).parent / f"models/dummy/{source['gdml_dummy']}"
+        source_lv = amend_gdml(dummy_gdml_path, replacements).getWorldVolume()
     else:
         # TODO: add the construction of geometry
         msg = "cannot construct geometry without the gdml for now"
@@ -206,8 +244,22 @@ def create_source(from_gdml: bool = False) -> geant4.LogicalVolume:
 
 def create_source_holder(from_gdml: bool = False) -> geant4.LogicalVolume:
     if from_gdml:
-        reg_s_holder = _read_gdml_model("plexiglass_source_holder.gdml")
-        s_holder_lv = reg_s_holder.getWorldVolume()
+        # reg_s_holder = _read_gdml_model("plexiglass_source_holder.gdml")
+        # s_holder_lv = reg_s_holder.getWorldVolume()
+        source_holder = dim.SOURCE_HOLDER
+        dummy_gdml_path = Path(__file__).parent / "models/dummy/plexiglass_source_holder_dummy.gdml"
+        replacements = {
+            "source_holder_top_plate_height": source_holder["top_plate_height"],
+            "source_holder_top_height": source_holder["top_height"],
+            "source_holder_topbottom_height": source_holder["top_bottom_height"],
+            "source_holder_top_plate_width": source_holder["top_plate_width"],
+            "source_holder_top_inner_width": source_holder["top_inner_width"],
+            "source_holder_inner_width": source_holder["inner_width"],
+            "source_holder_bottom_inner_width": source_holder["bottom_inner_width"],
+            "source_holder_outer_width": source_holder["outer_width"],
+            "position_source_fromcryostat_z": dim.POSITIONS_FROM_CRYOSTAT["source"]["z"],
+        }
+        s_holder_lv = amend_gdml(dummy_gdml_path, replacements).getWorldVolume()
     else:
         # TODO: add the construction of geometry
         msg = "cannot construct geometry without the gdml for now"

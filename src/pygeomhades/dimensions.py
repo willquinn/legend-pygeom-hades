@@ -1,24 +1,33 @@
 from __future__ import annotations
 
 SOURCE_HOLDER = {
-    "top_plate_height": 0.0,
-    "top_plate_width": 0.0,
-    "top_height": 0.0,
-    "top_inner_width": 0.0,
-    "inner_width": 0.0,
-    "bottom_inner_width": 0.0,
-    "outer_width": 0.0,
-    "top_bottom_height": 0.0,
+    "top_plate_height": 3.0,
+    "top_plate_width": 30.0,
+    "top_height": 10.0,
+    "top_inner_width": 20.0,
+    "inner_width": 87.0,
+    "bottom_inner_width": 102.0,
+    "outer_width": 108.0,
+    "top_bottom_height": 6.1,
 }
 
 SOURCE = {
+    "id": "",
     "height": 0.0,
     "width": 0.0,
-    "foil_height": 0.0,
-    "foil_width": 0.0,
-    "al_ring_height": 0.0,
-    "al_ring_width_max": 0.0,
-    "al_ring_width_min": 0.0,
+    "foil": {"height": 0.0, "width": 0.0},
+    "al_ring": {"height": 0.0, "width_max": 0.0, "width_min": 0.0},
+    "capsule": {"width": 0.0, "depth": 0.0, "height": 0.0},
+    "collimator": {
+        "width": 0.0,
+        "depth": 0.0,
+        "height": 0.0,
+        "beam_width": 0.0,
+        "beam_height": 0.0,
+        "window": 0.0,
+    },
+    "plates": {"height": 0.0, "width": 0.0, "cavity_width": 0.0},
+    "gdml_dummy": "",
 }
 
 LEAD_CASTLE_1 = {
@@ -114,4 +123,51 @@ def update_dims(hpge_meta: dict, config: dict) -> None:
         LEAD_CASTLE.update(LEAD_CASTLE_2)
     else:
         msg = "only 2 lead castle options"
+        raise RuntimeError(msg)
+
+    SOURCE["id"] = config["source"]
+    SOURCE["gdml_dummy"] = f"source_{SOURCE['id']}_dummy.gdml"
+    POSITIONS_FROM_CRYOSTAT["source"]["phi"] = 0
+    POSITIONS_FROM_CRYOSTAT["source"]["x"] = 0.0
+    POSITIONS_FROM_CRYOSTAT["source"]["y"] = 0.0
+    POSITIONS_FROM_CRYOSTAT["source"]["z"] = 0.0
+    if config["source"] == "am1":
+        SOURCE["height"] = 0.0
+        SOURCE["width"] = 0.0
+        SOURCE["capsule"]["width"] = 0.0
+        SOURCE["capsule"]["depth"] = 0.0
+        SOURCE["capsule"]["height"] = 0.0
+        SOURCE["collimator"]["width"] = 0.0
+        SOURCE["collimator"]["depth"] = 0.0
+        SOURCE["collimator"]["height"] = 0.0
+        SOURCE["collimator"]["beam_width"] = 0.0
+        SOURCE["collimator"]["beam_height"] = 0.0
+        SOURCE["collimator"]["window"] = 0.0
+    elif config["source"] == "am2":
+        SOURCE["height"] = 0.0
+        SOURCE["width"] = 0.0
+        SOURCE["capsule"]["width"] = 0.0
+        SOURCE["capsule"]["depth"] = 0.0
+        SOURCE["capsule"]["height"] = 0.0
+    elif config["source"] == "co":
+        SOURCE["height"] = 0.0
+        SOURCE["width"] = 0.0
+        SOURCE["foil"]["width"] = 0.0
+        SOURCE["foil"]["height"] = 0.0
+        SOURCE["al_ring"]["height"] = 0.0
+        SOURCE["al_ring"]["width_max"] = 0.0
+        SOURCE["al_ring"]["width_min"] = 0.0
+    elif config["source"] == "ba":
+        SOURCE["height"] = 0.1
+        SOURCE["width"] = 5.0
+        SOURCE["foil"]["width"] = 26.0
+        SOURCE["foil"]["height"] = 0.5
+        SOURCE["al_ring"]["height"] = 3.0
+        SOURCE["al_ring"]["width_max"] = 30.0
+        SOURCE["al_ring"]["width_min"] = 26.0
+    elif config["source"] == "th":
+        SOURCE["height"] = 0.0
+        SOURCE["width"] = 0.0
+    else:
+        msg = "only configured 5 source types"
         raise RuntimeError(msg)
