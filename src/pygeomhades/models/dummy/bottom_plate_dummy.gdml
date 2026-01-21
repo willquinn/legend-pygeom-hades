@@ -7,9 +7,9 @@
 		<quantity name="bottom_plate_y" type="length" value="bottom_plate_depth" unit="mm"/>
 		<quantity name="bottom_plate_z" type="length" value="bottom_plate_height" unit="mm"/>
 
-		<quantity name="cavity_bottom_plate_x" type="length" value="cavity_bottom_plate_width" unit="mm"/>
-		<quantity name="cavity_bottom_plate_y" type="length" value="cavity_bottom_plate_depth" unit="mm"/>
-		<quantity name="cavity_bottom_plate_z" type="length" value="cavity_bottom_plate_height" unit="mm"/>
+		<quantity name="cavity_bottom_plate_x" type="length" value="bottom_cavity_plate_width" unit="mm"/>
+		<quantity name="cavity_bottom_plate_y" type="length" value="bottom_cavity_plate_depth" unit="mm"/>
+		<quantity name="cavity_bottom_plate_z" type="length" value="bottom_cavity_plate_height" unit="mm"/>
 
 		<position name="pos_cavity_bottom_plate" y="(bottom_plate_y)/2"/>
 
@@ -43,7 +43,6 @@
 			<solidref ref="final_bottom_plate"/>
 		</volume>
 	</structure>
-
 
 	<setup name="Default" version="1.0">
 		<world ref="Bottom_plate"/>

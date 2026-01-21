@@ -14,7 +14,18 @@ from pygeomhades.utils import _read_gdml_model
 #      but maybe when/if we move away from loading gdml files this will not be true
 
 
-def amend_gdml(dummy_gdml_path: Path, replacements: dict) -> geant4.Registry:
+def write_gdml(reg: gdml.Registry, gdml_file_name: str | Path) -> None:
+    w = gdml.Writer()
+    w.addDetector(reg)
+    w.write(gdml_file_name)
+
+
+def amend_gdml(
+    dummy_gdml_path: Path,
+    replacements: dict,
+    write_file: bool = False,
+    gdml_file_name: str | Path = "test.gdml",
+) -> geant4.Registry:
     gdml_text = dummy_gdml_path.read_text()
 
     for key, val in replacements.items():
@@ -24,20 +35,26 @@ def amend_gdml(dummy_gdml_path: Path, replacements: dict) -> geant4.Registry:
         f.write(gdml_text)
         f.flush()
         reader = gdml.Reader(f.name)
+
+        if write_file:
+            write_gdml(reader.getRegistry(), gdml_file_name)
+
         return reader.getRegistry()
 
 
 def create_vacuum_cavity(reg: geant4.Registry) -> geant4.LogicalVolume:
-    vacuum_cavity_radius = (dim.CRYOSTAT_WIDTH - 2 * dim.CRYOSTAT_THICKNESS) / 2
+    vacuum_cavity_radius = (dim.CRYOSTAT["width"] - 2 * dim.CRYOSTAT["thickness"]) / 2
     vacuum_cavity_z = (
-        dim.CRYOSTAT_HEIGHT - dim.POSITION_CRYOSTAT_CAVITY_FROM_TOP - dim.POSITION_CRYOSTAT_CAVITY_FROM_BOTTOM
+        dim.CRYOSTAT["height"]
+        - dim.CRYOSTAT["position_cavity_from_top"]
+        - dim.CRYOSTAT["position_cavity_from_bottom"]
     )
-    cavity_material = geant4.MaterialPredefined("G4_AIR")
+    cavity_material = geant4.MaterialPredefined("G4_Galactic")
     vacuum_cavity = geant4.solid.GenericPolycone(
         "vacuum_cavity",
         0.0,
         2.0 * np.pi,
-        pR=([0.0, vacuum_cavity_radius, vacuum_cavity_z, 0.0]),
+        pR=([0.0, vacuum_cavity_radius, vacuum_cavity_radius, 0.0]),
         pZ=[0.0, 0.0, vacuum_cavity_z, vacuum_cavity_z],
         lunit="mm",
         aunit="rad",
@@ -79,8 +96,8 @@ def create_holder(detector_meta: dict, from_gdml: bool = False) -> geant4.Logica
                 "inner_height_in_mm": holder["cylinder"]["inner"]["height_in_mm"],
                 "outer_radius_in_mm": holder["cylinder"]["outer"]["radius_in_mm"],
                 "inner_radius_in_mm": holder["cylinder"]["inner"]["radius_in_mm"],
-                "bottom_cyl_outer_radius_in_mm": holder["bottom_cyl"]["outer"]["radius_in_mm"],
-                "bottom_cyl_inner_radius_in_mm": holder["bottom_cyl"]["inner"]["radius_in_mm"],
+                "outer_bottom_cyl_radius_in_mm": holder["bottom_cyl"]["outer"]["radius_in_mm"],
+                "inner_bottom_cyl_radius_in_mm": holder["bottom_cyl"]["inner"]["radius_in_mm"],
                 "edge_height_in_mm": holder["edge"]["height_in_mm"],
                 "pos_top_ring_in_mm": holder["rings"]["position_top_ring_in_mm"],
                 "pos_bottom_ring_in_mm": holder["rings"]["position_bottom_ring_in_mm"],
@@ -118,19 +135,19 @@ def create_holder(detector_meta: dict, from_gdml: bool = False) -> geant4.Logica
     return holder_lv
 
 
-def create_bottom_plate(from_gdml: bool = False) -> geant4.LogicalVolume:
+def create_bottom_plate(from_gdml: bool = False) -> geant4.Registry:
     if from_gdml:
-        dummy_gdml_path = Path(__file__).parent / "models/dummy/lead_castle_table1_dummy.gdml"
+        dummy_gdml_path = Path(__file__).parent / "models/dummy/bottom_plate_dummy.gdml"
         plate = dim.BOTTOM_PLATE
         replacements = {
             "bottom_plate_width": plate["width"],
             "bottom_plate_depth": plate["depth"],
             "bottom_plate_height": plate["height"],
-            "cavity_bottom_plate_width": plate["cavity_width"],
-            "cavity_bottom_plate_depth": plate["cavity_depth"],
-            "cavity_bottom_plate_height": plate["cavity_height"],
+            "bottom_cavity_plate_width": plate["cavity_width"],
+            "bottom_cavity_plate_depth": plate["cavity_depth"],
+            "bottom_cavity_plate_height": plate["cavity_height"],
         }
-        plate_lv = amend_gdml(dummy_gdml_path, replacements)
+        plate_lv = amend_gdml(dummy_gdml_path, replacements).getWorldVolume()
     else:
         # TODO: add the construction of geometry
         msg = "cannot construct geometry without the gdml for now"
@@ -167,7 +184,7 @@ def create_lead_castle(table_num: int, from_gdml: bool = False) -> geant4.Logica
         else:
             msg = "there are only 2 lead castles currently in the gdml"
             raise RuntimeError(msg)
-        castle_lv = amend_gdml(dummy_gdml_path, replacements)
+        castle_lv = amend_gdml(dummy_gdml_path, replacements).getWorldVolume()
     else:
         # TODO: add the construction of geometry
         msg = "cannot construct geometry without the gdml for now"
@@ -198,10 +215,18 @@ def create_source_holder(from_gdml: bool = False) -> geant4.LogicalVolume:
     return s_holder_lv
 
 
-def create_cryostat(from_gdml: bool = False) -> geant4.LogicalVolume:
+def create_cryostat(hpge_meta, from_gdml: bool = False) -> geant4.LogicalVolume:
     if from_gdml:
-        reg_cryo = _read_gdml_model("cryostat.gdml")
-        cryo_lv = reg_cryo.getWorldVolume()
+        dummy_gdml_path = Path(__file__).parent / "models/dummy/cryostat_dummy.gdml"
+        cryostat = dim.CRYOSTAT
+        replacements = {
+            "cryostat_height": cryostat["height"],
+            "cryostat_width": cryostat["width"],
+            "cryostat_thickness": cryostat["thickness"],
+            "position_cryostat_cavity_fromTop": cryostat["position_cavity_from_top"],
+            "position_cryostat_cavity_fromBottom": cryostat["position_cavity_from_bottom"],
+        }
+        cryo_lv = amend_gdml(dummy_gdml_path, replacements).getWorldVolume()
     else:
         # TODO: add the construction of geometry
         msg = "cannot construct geometry without the gdml for now"

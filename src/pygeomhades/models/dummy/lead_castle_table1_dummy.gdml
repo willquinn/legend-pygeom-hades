@@ -24,8 +24,8 @@
 	  	<quantity name="front_z_1" type="length" value="front_height_1" unit="mm"/>
 
 	  	<position name="pos_cavity_base_1" y="(inner_cavity_y_1/2+(base_y_1-inner_cavity_y_1)/4)" z="(inner_cavity_z_1-cavity_z_1)/2" />
-	  	<position name="pos_top_1" z="-(base_z_1+top_z_1)/2" />
-	  	<position name="pos_front_1" y="(base_y_1+front_y_1)/2" z="(base_z_1-front_z_1)/2" />
+	  	<position name="pos_top_1" z="-(base_z_1+top_z_1)/2 - 0.01" />
+	  	<position name="pos_front_1" y="(base_y_1+front_y_1)/2 - 0.01" z="(base_z_1-front_z_1)/2" />
 
 	  	<position name="center" x="0" y="0" z="0" />
 
@@ -59,7 +59,6 @@
 			<positionref ref="center" />
 		</subtraction>
 
-
 		<union name="top_base_1" >
 			<first ref="base_cavity_1"/> <second ref="top_lead_castle_1"/>
 			<positionref ref="pos_top_1" />
@@ -74,7 +73,7 @@
 
 	<structure>
 		<volume name="Lead_castle">
-			<materialref ref="Pb"/>
+			<materialref ref="G4_Pb"/>
 			<solidref ref="final_lead_castle_1"/>
 		</volume>
 	</structure>

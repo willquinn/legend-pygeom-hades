@@ -12,18 +12,18 @@
   		<quantity name="outer_radius" type="length" value="outer_radius_in_mm" unit="mm"/>
   		<quantity name="inner_radius" type="length" value="inner_radius_in_mm" unit="mm"/>
 
-  		<quantity name="bottom_cyl_inner_radius" type="length" value="bottom_cyl_inner_radius_in_mm" unit="mm"/>
-  		<quantity name="bottom_cyl_outer_radius" type="length" value="bottom_cyl_outer_radius_in_mm" unit="mm"/>
+  		<quantity name="bottom_cyl_inner_radius" type="length" value="inner_bottom_cyl_radius_in_mm" unit="mm"/>
+  		<quantity name="bottom_cyl_outer_radius" type="length" value="outer_bottom_cyl_radius_in_mm" unit="mm"/>
 
   		<quantity name="edge_height" type="length" value="edge_height_in_mm" unit="mm"/>
 
-  		<quantity name="pos_bottom_ring_z" type="length"  value="pos_bottom_ring_z_in_mm" unit="mm"/>
-  		<quantity name="pos_top_ring_z" type="length"  value="pos_top_ring_z_in_mm" unit="mm"/>
+  		<quantity name="pos_bottom_ring_z" type="length"  value="pos_bottom_ring_in_mm" unit="mm"/>
+  		<quantity name="pos_top_ring_z" type="length"  value="pos_top_ring_in_mm" unit="mm"/>
 
-  		<quantity name="end_top_ring_z" type="length" value="end_top_ring_z_in_mm"  unit="mm"/>
-  		<quantity name="end_bottom_ring_z" type="length" value="end_bottom_ring_z_in_mm"  unit="mm"/>
-  		<quantity name="end_bottom_cyl_outer_z" type="length" value="end_bottom_cyl_outer_z_in_mm" unit="mm" />
-  		<quantity name="end_bottom_cyl_inner_z" type="length" value="end_bottom_cyl_inner_z_in_mm" unit="mm" />
+  		<quantity name="end_top_ring_z" type="length" value="end_top_ring_in_mm"  unit="mm"/>
+  		<quantity name="end_bottom_ring_z" type="length" value="end_bottom_ring_in_mm"  unit="mm"/>
+  		<quantity name="end_bottom_cyl_outer_z" type="length" value="end_bottom_cyl_outer_in_mm" unit="mm" />
+  		<quantity name="end_bottom_cyl_inner_z" type="length" value="end_bottom_cyl_inner_in_mm" unit="mm" />
 
  	</define>
 

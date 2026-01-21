@@ -1,14 +1,6 @@
 from __future__ import annotations
 
 # Fixed Dimensions
-# Cryostat dimensions
-CRYOSTAT_HEIGHT = 171.0
-CRYOSTAT_WIDTH = 101.6
-CRYOSTAT_THICKNESS = 1.5
-POSITION_CRYOSTAT_CAVITY_FROM_TOP = 1.5
-POSITION_CRYOSTAT_CAVITY_FROM_BOTTOM = 0.8
-POSITION_CRYOSTAT_FROM_BOTTOM = 250.0
-
 # Base dimensions
 BASE_WIDTH = 480.0
 BASE_DEPTH = 450.0
@@ -99,6 +91,16 @@ BOTTOM_PLATE = {
     "cavity_height": 20,
 }
 
+# Cryostat dimensions
+CRYOSTAT = {
+    "height": 0,
+    "width": 0,
+    "thickness": 0,
+    "position_cavity_from_top": 0,
+    "position_cavity_from_bottom": 0,
+    "position_from_bottom": 0,
+}
+
 # Changing relative dimensions
 # Positions relative to cryostat initialise
 POSITIONS_FROM_CRYOSTAT = {"detector": 0.0, "holder": 0.0, "wrap": 0.0}
@@ -109,7 +111,27 @@ POSITION_SOURCE_FROM_CRYOSTAT_Y = -0.0
 POSITION_SOURCE_FROM_CRYOSTAT_Z = 200.0
 
 
-def update_cryostat_dims(ged_meta_dict):
-    POSITIONS_FROM_CRYOSTAT["detector"] = ged_meta_dict["hades"]["dimensions"]["detector"]["position"]
-    POSITIONS_FROM_CRYOSTAT["holder"] = ged_meta_dict["hades"]["dimensions"]["holder"]["position"]
-    POSITIONS_FROM_CRYOSTAT["wrap"] = ged_meta_dict["hades"]["dimensions"]["wrap"]["position"]
+def update_cryostat_dims(hpge_meta):
+    POSITIONS_FROM_CRYOSTAT["detector"] = hpge_meta["hades"]["dimensions"]["detector"]["position"]
+    POSITIONS_FROM_CRYOSTAT["holder"] = hpge_meta["hades"]["dimensions"]["holder"]["position"]
+    POSITIONS_FROM_CRYOSTAT["wrap"] = hpge_meta["hades"]["dimensions"]["wrap"]["position"]
+
+    CRYOSTAT["position_cavity_from_top"] = 1.5
+    CRYOSTAT["position_cavity_from_bottom"] = 0.8
+    CRYOSTAT["position_from_bottom"] = 250.0
+    CRYOSTAT["thickness"] = 1.5
+
+    if hpge_meta["type"] == "bege":
+        CRYOSTAT["height"] = 122.2
+        CRYOSTAT["width"] = 101.6
+
+    elif hpge_meta["type"] == "icpc":
+        xl_orders = [3, 8, 9, 10]
+        CRYOSTAT["height"] = 171.0
+        if hpge_meta["production"]["order"] in xl_orders:
+            CRYOSTAT["width"] = 114.3
+        else:
+            CRYOSTAT["width"] = 101.6
+
+        if hpge_meta["production"]["order"] == 9 and hpge_meta["production"]["slice"] == "B":
+            CRYOSTAT["width"] = 107.95
