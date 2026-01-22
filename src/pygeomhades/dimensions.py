@@ -1,18 +1,32 @@
 from __future__ import annotations
 
 SOURCE_HOLDER = {
-    "top_plate_height": 3.0,
-    "top_plate_width": 30.0,
-    "top_height": 10.0,
-    "top_inner_width": 20.0,
-    "inner_width": 87.0,
-    "bottom_inner_width": 102.0,
-    "outer_width": 108.0,
-    "top_bottom_height": 6.1,
+    "lat": {"height": 0.0, "cavity_height": 0.0, "cavity_width": 0.0},
+    "am": {
+        "top_height": 0.0,
+        "top_inner_width": 0.0,
+        "top_inner_depth": 0.0,
+        "bottom_inner_width": 0.0,
+        "top_bottom_height": 0.0,
+        "top_plate_width": 0.0,
+        "top_plate_depth": 0.0,
+        "top_plate_height": 0.0,
+    },
+    "copper": {"height": 0.0, "width": 0.0, "cavity_width": 0.0, "bottom_height": 0.0, "bottom_width": 0.0},
+    "top": {
+        "top_plate_height": 0.0,
+        "top_plate_width": 0.0,
+        "top_height": 0.0,
+        "top_inner_width": 0.0,
+        "bottom_inner_width": 0.0,
+        "top_bottom_height": 0.0,
+    },
+    "inner_width": 0.0,
+    "holder_width": 0.0,
+    "outer_width": 0.0,
 }
 
 SOURCE = {
-    "id": "",
     "height": 0.0,
     "width": 0.0,
     "foil": {"height": 0.0, "width": 0.0},
@@ -26,7 +40,9 @@ SOURCE = {
         "beam_height": 0.0,
         "window": 0.0,
     },
+    "epoxy": {"height": 0.0, "width": 0.0},
     "plates": {"height": 0.0, "width": 0.0, "cavity_width": 0.0},
+    "offset_height": 0.0,  # only used in the th
     "gdml_dummy": "",
 }
 
@@ -125,38 +141,36 @@ def update_dims(hpge_meta: dict, config: dict) -> None:
         msg = "only 2 lead castle options"
         raise RuntimeError(msg)
 
-    SOURCE["id"] = config["source"]
-    SOURCE["gdml_dummy"] = f"source_{SOURCE['id']}_dummy.gdml"
     POSITIONS_FROM_CRYOSTAT["source"]["phi"] = 0
     POSITIONS_FROM_CRYOSTAT["source"]["x"] = 0.0
     POSITIONS_FROM_CRYOSTAT["source"]["y"] = 0.0
     POSITIONS_FROM_CRYOSTAT["source"]["z"] = 0.0
-    if config["source"] == "am1":
-        SOURCE["height"] = 0.0
-        SOURCE["width"] = 0.0
-        SOURCE["capsule"]["width"] = 0.0
-        SOURCE["capsule"]["depth"] = 0.0
-        SOURCE["capsule"]["height"] = 0.0
-        SOURCE["collimator"]["width"] = 0.0
-        SOURCE["collimator"]["depth"] = 0.0
-        SOURCE["collimator"]["height"] = 0.0
-        SOURCE["collimator"]["beam_width"] = 0.0
-        SOURCE["collimator"]["beam_height"] = 0.0
-        SOURCE["collimator"]["window"] = 0.0
-    elif config["source"] == "am2":
-        SOURCE["height"] = 0.0
-        SOURCE["width"] = 0.0
-        SOURCE["capsule"]["width"] = 0.0
-        SOURCE["capsule"]["depth"] = 0.0
-        SOURCE["capsule"]["height"] = 0.0
+    if config["source"] == "am_collimated":
+        SOURCE["height"] = 2.0
+        SOURCE["width"] = 1.0
+        SOURCE["capsule"]["width"] = 20
+        SOURCE["capsule"]["depth"] = None
+        SOURCE["capsule"]["height"] = 10.0
+        SOURCE["collimator"]["width"] = 30.0
+        SOURCE["collimator"]["depth"] = 30.0
+        SOURCE["collimator"]["height"] = 65.0
+        SOURCE["collimator"]["beam_width"] = 1.0
+        SOURCE["collimator"]["beam_height"] = 25.6
+        SOURCE["collimator"]["window"] = 0.2
+    elif config["source"] == "am":
+        SOURCE["height"] = 0.1
+        SOURCE["width"] = 1.0
+        SOURCE["capsule"]["width"] = 11.08
+        SOURCE["capsule"]["depth"] = 23.08
+        SOURCE["capsule"]["height"] = 2.02
     elif config["source"] == "co":
-        SOURCE["height"] = 0.0
-        SOURCE["width"] = 0.0
-        SOURCE["foil"]["width"] = 0.0
-        SOURCE["foil"]["height"] = 0.0
-        SOURCE["al_ring"]["height"] = 0.0
-        SOURCE["al_ring"]["width_max"] = 0.0
-        SOURCE["al_ring"]["width_min"] = 0.0
+        SOURCE["height"] = 0.1
+        SOURCE["width"] = 5.0
+        SOURCE["foil"]["width"] = 20.0
+        SOURCE["foil"]["height"] = 0.5
+        SOURCE["al_ring"]["height"] = 3.0
+        SOURCE["al_ring"]["width_max"] = 30.0
+        SOURCE["al_ring"]["width_min"] = 20.0
     elif config["source"] == "ba":
         SOURCE["height"] = 0.1
         SOURCE["width"] = 5.0
@@ -166,8 +180,64 @@ def update_dims(hpge_meta: dict, config: dict) -> None:
         SOURCE["al_ring"]["width_max"] = 30.0
         SOURCE["al_ring"]["width_min"] = 26.0
     elif config["source"] == "th":
-        SOURCE["height"] = 0.0
-        SOURCE["width"] = 0.0
+        SOURCE["height"] = 1.0
+        SOURCE["width"] = 1.0
+        SOURCE["capsule"]["height"] = 7.0
+        SOURCE["capsule"]["width"] = 2.0
+        SOURCE["epoxy"]["height"] = 2.2
+        SOURCE["epoxy"]["width"] = 1.6
+        SOURCE["plates"]["height"] = 2.0
+        SOURCE["plates"]["width"] = 8.0
+        SOURCE["plates"]["cavity_width"] = 2.0
+        SOURCE["collimator"]["height"] = 30.0
+        SOURCE["collimator"]["depth"] = 30.0
+        SOURCE["collimator"]["width"] = 30.0
+        SOURCE["collimator"]["beam_height"] = 15.0
+        SOURCE["collimator"]["beam_width"] = 1.0
+
+        if config["measurement_type"] == "top":
+            SOURCE["offset_height"] = 0.0
+        elif config["measurement_type"] == "lat":
+            SOURCE["offset_height"] = 18.0
+        else:
+            msg = "can only have top or lat measurements"
+            raise RuntimeError(msg)
     else:
         msg = "only configured 5 source types"
+        raise RuntimeError(msg)
+
+    if config["source"] in ["co", "ba", "am_collimated"]:
+        SOURCE_HOLDER["top"]["top_plate_height"] = 3.0
+        SOURCE_HOLDER["top"]["top_plate_width"] = 30.0
+        SOURCE_HOLDER["top"]["top_height"] = 10.0
+        SOURCE_HOLDER["top"]["top_inner_width"] = 20.0
+        SOURCE_HOLDER["top"]["top_bottom_height"] = 6.1
+        SOURCE_HOLDER["top"]["bottom_inner_width"] = 102.0
+        SOURCE_HOLDER["outer_width"] = 108.0
+        SOURCE_HOLDER["inner_width"] = 87.0
+    elif config["source"] == "am":
+        SOURCE_HOLDER["outer_width"] = 108.0
+        SOURCE_HOLDER["inner_width"] = 87.0
+        SOURCE_HOLDER["am"]["top_height"] = 10.0
+        SOURCE_HOLDER["am"]["top_inner_width"] = 7.39
+        SOURCE_HOLDER["am"]["top_inner_depth"] = 15.39
+        SOURCE_HOLDER["am"]["bottom_inner_width"] = 102.0
+        SOURCE_HOLDER["am"]["top_bottom_height"] = 5.6
+        SOURCE_HOLDER["am"]["top_plate_width"] = 11.08
+        SOURCE_HOLDER["am"]["top_plate_depth"] = 23.08
+        SOURCE_HOLDER["am"]["top_plate_height"] = 2.0
+    elif config["source"] == "th":
+        SOURCE_HOLDER["copper"]["height"] = 30.0
+        SOURCE_HOLDER["copper"]["height"] = 32.0
+        SOURCE_HOLDER["copper"]["cavity_width"] = 3.0
+        SOURCE_HOLDER["copper"]["bottom_height"] = 3.0
+        SOURCE_HOLDER["copper"]["bottom_width"] = 50.0
+        if config["measurement_type"] == "lat":
+            SOURCE_HOLDER["outer_width"] = 181.6
+            SOURCE_HOLDER["inner_width"] = 101.6
+            SOURCE_HOLDER["lat"]["height"] = 65.0
+            SOURCE_HOLDER["lat"]["cavity_height"] = 60.0
+            SOURCE_HOLDER["lat"]["cavity_width"] = 50.0
+    else:
+        msg = ""
         raise RuntimeError(msg)
