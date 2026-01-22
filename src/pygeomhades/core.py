@@ -23,6 +23,7 @@ from pygeomhades.create_volumes import (
     create_vacuum_cavity,
     create_wrap,
 )
+from pygeomhades.metadata import PublicMetadataProxy
 
 log = logging.getLogger(__name__)
 
@@ -87,19 +88,20 @@ def construct(
     if not public_geometry:
         with contextlib.suppress(GitCommandError):
             lmeta = LegendMetadata(lazy=True)
+
     # require user action to construct a testdata-only geometry (i.e. to avoid accidental creation of "wrong"
     # geometries by LEGEND members).
     if lmeta is None and not public_geometry:
         msg = "cannot construct geometry from public testdata only, if not explicitly instructed"
         raise RuntimeError(msg)
+
     if lmeta is None:
         log.warning("CONSTRUCTING GEOMETRY FROM PUBLIC DATA ONLY")
-        # TODO: use this public metadata proxy
-        # dummy_geom = PublicMetadataProxy()
+        lmeta = PublicMetadataProxy()
 
-    if config is None:
+    if config is None or config == {}:
         config = {
-            "hpge_name": "V03421A",
+            "hpge_name": "V07302A",
             "lead_castle": 1,
             "source": "am_collimated",
             "measurement_type": "top",
