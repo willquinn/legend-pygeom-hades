@@ -121,7 +121,7 @@ def construct(
         cavity_lv = create_vacuum_cavity(reg)
         geant4.PhysicalVolume(
             [0, 0, 0],
-            [0, 0, dim.CRYOSTAT["position_cavity_from_top"], "mm"],
+            [0, 0, dim.cryostat["position_cavity_from_top"], "mm"],
             cavity_lv,
             "cavity_pv",
             world_lv,
@@ -132,7 +132,7 @@ def construct(
             wrap_lv = create_wrap(hpge_meta, from_gdml=True)
             geant4.PhysicalVolume(
                 [0, 0, 0],
-                [0, 0, dim.POSITIONS_FROM_CRYOSTAT["wrap"] - dim.CRYOSTAT["position_cavity_from_top"], "mm"],
+                [0, 0, dim.positions_from_cryostat["wrap"] - dim.cryostat["position_cavity_from_top"], "mm"],
                 wrap_lv,
                 "wrap_pv",
                 cavity_lv,
@@ -146,7 +146,7 @@ def construct(
                 [
                     0,
                     0,
-                    dim.POSITIONS_FROM_CRYOSTAT["holder"] - dim.CRYOSTAT["position_cavity_from_top"],
+                    dim.positions_from_cryostat["holder"] - dim.cryostat["position_cavity_from_top"],
                     "mm",
                 ],
                 holder_lv,
@@ -162,7 +162,7 @@ def construct(
                 [
                     0,
                     0,
-                    (dim.POSITIONS_FROM_CRYOSTAT["detector"] - dim.CRYOSTAT["position_cavity_from_top"]),
+                    (dim.positions_from_cryostat["detector"] - dim.cryostat["position_cavity_from_top"]),
                     "mm",
                 ],
                 detector_lv,
@@ -175,7 +175,7 @@ def construct(
         plate_lv = create_bottom_plate(from_gdml=True)
         geant4.PhysicalVolume(
             [0, 0, 0],
-            [0, 0, dim.CRYOSTAT["position_from_bottom"] + (dim.BOTTOM_PLATE["height"]) / 2, "mm"],
+            [0, 0, dim.cryostat["position_from_bottom"] + (dim.bottom_plate["height"]) / 2, "mm"],
             plate_lv,
             "plate_pv",
             world_lv,
@@ -186,7 +186,7 @@ def construct(
         castle_lv = create_lead_castle(config["lead_castle"], from_gdml=True)
         geant4.PhysicalVolume(
             [0, 0, 0],
-            [0, 0, dim.CRYOSTAT["position_from_bottom"] - (dim.LEAD_CASTLE["base_height"]) / 2, "mm"],
+            [0, 0, dim.cryostat["position_from_bottom"] - (dim.lead_castle["base_height"]) / 2, "mm"],
             castle_lv,
             "castle_pv",
             world_lv,
@@ -197,7 +197,7 @@ def construct(
         source_lv = create_source(config, from_gdml=True)
         geant4.PhysicalVolume(
             [0, 0, 0],
-            [0, 0, -dim.POSITIONS_FROM_CRYOSTAT["source"]["z"], "mm"],
+            [0, 0, -dim.positions_from_cryostat["source"]["z"], "mm"],
             source_lv,
             "source_pv",
             world_lv,
@@ -223,8 +223,8 @@ def construct(
                 0,
                 0,
                 -(
-                    dim.POSITIONS_FROM_CRYOSTAT["source"]["z"]
-                    + dim.SOURCE_HOLDER["top"]["top_plate_height"] / 2
+                    dim.positions_from_cryostat["source"]["z"]
+                    + dim.source_holder["top"]["top_plate_height"] / 2
                 ),  # TODO: this will break so we need to change it
                 "mm",
             ],
